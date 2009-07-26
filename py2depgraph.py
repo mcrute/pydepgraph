@@ -49,6 +49,12 @@ class mymf(modulefinder.ModuleFinder):
             self._types[r.__name__] = type
         return r
 
+def clean_graph(graph, package):
+    for key, value in graph.items():
+        if not key.startswith(package):
+            del graph[key]
+
+    return graph
 
 def main(argv):
     path = sys.path[:]
@@ -56,7 +62,9 @@ def main(argv):
     exclude = []
     mf = mymf(path,debug,exclude)
     mf.run_script(argv[0])
-    pprint.pprint({'depgraph':mf._depgraph,'types':mf._types})
+    app_name = argv[1]
+    pprint.pprint({'depgraph':clean_graph(mf._depgraph, app_name),
+                   'types':clean_graph(mf._types, app_name)})
 
 if __name__=='__main__':
     main(sys.argv[1:])
